@@ -15,6 +15,7 @@ from airport.serializers import (AirportSerializer,
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import F, Count
 from rest_framework.viewsets import GenericViewSet
 from drf_spectacular.utils import extend_schema
@@ -164,14 +165,22 @@ class FlightViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
+class OrderPagination(PageNumberPagination):
+    page_size = 2
+    max_page_size = 100
+
+
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.prefetch_related("tickets__flight__route__source",
-                                              "tickets__flight__route__destination",
-                                              "tickets__flight__airplane__airplane_type",
-                                              "tickets__flight__crew").order_by("id")
+    queryset = (Order.objects
+                .select_related("customer")
+                .prefetch_related("tickets__flight__route__source",
+                                  "tickets__flight__route__destination",
+                                  "tickets__flight__airplane__airplane_type",
+                                  "tickets__flight__crew").order_by("-created_at"))
 
     serializer_class = OrderSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    pagination_class = OrderPagination
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -180,5 +189,5 @@ class OrderViewSet(viewsets.ModelViewSet):
         return OrderSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(customer=self.request.user)
 

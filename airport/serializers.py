@@ -103,7 +103,7 @@ class TicketSerializer(serializers.ModelSerializer):
         Ticket.validate_ticket(
             attrs["row"],
             attrs["seat"],
-            attrs["flight"].route,
+            # attrs["flight"].route,
             attrs["flight"].airplane,
             ValidationError
         )
@@ -146,6 +146,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ("id", "tickets", "created_at",)
+        read_only_fields = ("created_at",)
 
     def create(self, validated_data):
         with transaction.atomic():
