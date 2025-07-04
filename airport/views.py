@@ -1,17 +1,21 @@
 from django.shortcuts import render
 from rest_framework import viewsets, mixins, status
-from airport.serializers import (AirportSerializer,
-                                 RouteSerializer,
-                                 RouteDetailSerializer,
-                                 RouteListSerializer,
-                                 CrewSerializer,
-                                 AirplaneTypeSerializer,
-                                 AirplaneTypeImageSerializer,
-                                 AirplaneTypeDetail,
-                                 AirplaneSerializer,
-                                 FlightSerializer, FlightListSerializer,
-                                 FlightDetailSerializer,
-                                 OrderSerializer, OrderListSerializer)
+from airport.serializers import (
+    AirportSerializer,
+    RouteSerializer,
+    RouteDetailSerializer,
+    RouteListSerializer,
+    CrewSerializer,
+    AirplaneTypeSerializer,
+    AirplaneTypeImageSerializer,
+    AirplaneTypeDetail,
+    AirplaneSerializer,
+    FlightSerializer,
+    FlightListSerializer,
+    FlightDetailSerializer,
+    OrderSerializer,
+    OrderListSerializer,
+)
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -22,11 +26,18 @@ from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from airport.models import (Airport, Route,
-                     Crew, AirplaneType,
-                     Airplane, Flight,
-                     Order, Ticket)
+from airport.models import (
+    Airport,
+    Route,
+    Crew,
+    AirplaneType,
+    Airplane,
+    Flight,
+    Order,
+    Ticket,
+)
 from airport.permissions import IsAdminOrIfAuthenticatedReadOnly
+
 # Create your views here.
 
 
@@ -40,7 +51,6 @@ class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all().select_related("source", "destination")
     serializer_class = RouteSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
-
 
     def get_queryset(self):
         queryset = self.queryset
@@ -101,20 +111,22 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.select_related(
-        "route",
-        "route__source",
-        "route__destination",
-        "airplane",
-        "airplane__airplane_type"
-    ).prefetch_related(
-        "crew"
-    ).annotate(
-        tickets_available=(
-                F("airplane__rows") * F("airplane__seats_in_row")
-                - Count("tickets")
+    queryset = (
+        Flight.objects.select_related(
+            "route",
+            "route__source",
+            "route__destination",
+            "airplane",
+            "airplane__airplane_type",
         )
-    ).order_by("id")
+        .prefetch_related("crew")
+        .annotate(
+            tickets_available=(
+                F("airplane__rows") * F("airplane__seats_in_row") - Count("tickets")
+            )
+        )
+        .order_by("id")
+    )
 
     serializer_class = FlightSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -157,7 +169,6 @@ class FlightViewSet(viewsets.ModelViewSet):
                 "crew",
                 type={"type": "array", "items": {"type": "number"}},
                 description="Filter by crew id (ex. ?crew=1,2)",
-
             ),
         ]
     )
@@ -171,12 +182,16 @@ class OrderPagination(PageNumberPagination):
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = (Order.objects
-                .select_related("customer")
-                .prefetch_related("tickets__flight__route__source",
-                                  "tickets__flight__route__destination",
-                                  "tickets__flight__airplane__airplane_type",
-                                  "tickets__flight__crew").order_by("-created_at"))
+    queryset = (
+        Order.objects.select_related("customer")
+        .prefetch_related(
+            "tickets__flight__route__source",
+            "tickets__flight__route__destination",
+            "tickets__flight__airplane__airplane_type",
+            "tickets__flight__crew",
+        )
+        .order_by("-created_at")
+    )
 
     serializer_class = OrderSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -190,4 +205,3 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
-

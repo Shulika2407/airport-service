@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('airport', '0003_order_customer'),
+        ("airport", "0003_order_customer"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='airplanetype',
-            name='image',
-            field=models.ImageField(null=True, upload_to=airport.models.movie_image_file_path),
+            model_name="airplanetype",
+            name="image",
+            field=models.ImageField(
+                null=True, upload_to=airport.models.movie_image_file_path
+            ),
         ),
     ]

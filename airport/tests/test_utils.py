@@ -4,14 +4,21 @@ from django.utils import timezone
 
 
 from airport.models import (
-    Airport, Route, AirplaneType, Airplane, Crew, Flight, Order, Ticket
+    Airport,
+    Route,
+    AirplaneType,
+    Airplane,
+    Crew,
+    Flight,
+    Order,
+    Ticket,
 )
 
 
 def sample_airport(**params):
     defaults = {
         "name": "Boryspil International Airport",
-        "closest_big_city": "Test city"
+        "closest_big_city": "Test city",
     }
     defaults.update(params)
     return Airport.objects.create(**defaults)
@@ -24,10 +31,7 @@ def sample_route(source, destination, **params):
 
 
 def sample_crew(**params):
-    defaults = {
-        "first_name": "John",
-        "last_name": "Snow"
-    }
+    defaults = {"first_name": "John", "last_name": "Snow"}
     defaults.update(params)
     return Crew.objects.create(**defaults)
 
@@ -39,10 +43,7 @@ def sample_airplane_type(**params):
 
 
 def sample_airplane(airplane_type, **params):
-    defaults = {
-        "name": "Test plane",
-        "rows": 50, "seats_in_row": 6
-    }
+    defaults = {"name": "Test plane", "rows": 50, "seats_in_row": 6}
     defaults.update(params)
     return Airplane.objects.create(airplane_type=airplane_type, **defaults)
 
@@ -50,7 +51,7 @@ def sample_airplane(airplane_type, **params):
 def sample_flight(route, airplane, crew_list=None, **params):
     defaults = {
         "departure_time": timezone.now() + timedelta(days=1),
-        "arrival_time": timezone.now() + timedelta(days=1, hours=3)
+        "arrival_time": timezone.now() + timedelta(days=1, hours=3),
     }
     defaults.update(params)
     flight = Flight.objects.create(route=route, airplane=airplane, **defaults)

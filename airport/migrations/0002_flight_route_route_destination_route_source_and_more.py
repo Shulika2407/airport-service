@@ -7,42 +7,76 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('airport', '0001_initial'),
+        ("airport", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='flight',
-            name='route',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='airport.route'),
+            model_name="flight",
+            name="route",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="airport.route",
+            ),
         ),
         migrations.AddField(
-            model_name='route',
-            name='destination',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='arriving_routes', to='airport.airport'),
+            model_name="route",
+            name="destination",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="arriving_routes",
+                to="airport.airport",
+            ),
         ),
         migrations.AddField(
-            model_name='route',
-            name='source',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='departing_routes', to='airport.airport'),
+            model_name="route",
+            name="source",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="departing_routes",
+                to="airport.airport",
+            ),
         ),
         migrations.AddField(
-            model_name='ticket',
-            name='flight',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tickets', to='airport.flight'),
+            model_name="ticket",
+            name="flight",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tickets",
+                to="airport.flight",
+            ),
         ),
         migrations.AddField(
-            model_name='ticket',
-            name='order',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tickets', to='airport.order'),
+            model_name="ticket",
+            name="order",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tickets",
+                to="airport.order",
+            ),
         ),
         migrations.AlterField(
-            model_name='flight',
-            name='airplane',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='airport.airplane'),
+            model_name="flight",
+            name="airplane",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="airport.airplane",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='ticket',
-            unique_together={('flight', 'row', 'seat')},
+            name="ticket",
+            unique_together={("flight", "row", "seat")},
         ),
     ]

@@ -4,6 +4,7 @@ import os
 import uuid
 from django.utils.text import slugify
 
+
 # Create your models here.
 class Airport(models.Model):
     id = models.AutoField(primary_key=True)
@@ -16,18 +17,27 @@ class Airport(models.Model):
 
 class Route(models.Model):
     id = models.AutoField(primary_key=True)
-    source = models.ForeignKey("Airport",
-                               on_delete=models.CASCADE,
-                               null=True, blank=True,
-                               related_name="departing_routes")
-    destination = models.ForeignKey("Airport",
-                                      on_delete=models.CASCADE, null=True, blank=True,
-                                    related_name='arriving_routes')
+    source = models.ForeignKey(
+        "Airport",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="departing_routes",
+    )
+    destination = models.ForeignKey(
+        "Airport",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="arriving_routes",
+    )
     distance = models.IntegerField()
 
     def __str__(self):
-        return (f"Route from {self.source.name} to "
-                f"{self.destination.name} ({self.distance} km)")
+        return (
+            f"Route from {self.source.name} to "
+            f"{self.destination.name} ({self.distance} km)"
+        )
 
 
 class Crew(models.Model):
@@ -77,14 +87,18 @@ class Airplane(models.Model):
 class Flight(models.Model):
     id = models.AutoField(primary_key=True)
     route = models.ForeignKey("Route", on_delete=models.CASCADE, null=True, blank=True)
-    airplane = models.ForeignKey("Airplane", on_delete=models.CASCADE, null=True, blank=True)
+    airplane = models.ForeignKey(
+        "Airplane", on_delete=models.CASCADE, null=True, blank=True
+    )
     crew = models.ManyToManyField("Crew", blank=True)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
 
     def __str__(self):
-        return (f"Flight {self.route} on"
-                f" {self.departure_time.strftime('%Y-%m-%d %H:%M')}")
+        return (
+            f"Flight {self.route} on"
+            f" {self.departure_time.strftime('%Y-%m-%d %H:%M')}"
+        )
 
 
 class Order(models.Model):
@@ -93,7 +107,8 @@ class Order(models.Model):
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="orders", null=True
+        related_name="orders",
+        null=True,
     )
 
     def __str__(self):
@@ -107,15 +122,19 @@ class Ticket(models.Model):
     id = models.AutoField(primary_key=True)
     row = models.IntegerField()
     seat = models.IntegerField()
-    flight = models.ForeignKey("Flight", on_delete=models.CASCADE,  null=True,
-                               blank=True, related_name="tickets")
-    order = models.ForeignKey("Order", on_delete=models.CASCADE, null=True,
-                               blank=True, related_name="tickets")
+    flight = models.ForeignKey(
+        "Flight",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="tickets",
+    )
+    order = models.ForeignKey(
+        "Order", on_delete=models.CASCADE, null=True, blank=True, related_name="tickets"
+    )
 
     def __str__(self):
-        return (
-            f"{str(self.flight)} (row: {self.row}, seat: {self.seat})"
-        )
+        return f"{str(self.flight)} (row: {self.row}, seat: {self.seat})"
 
     class Meta:
         unique_together = ("flight", "row", "seat")
